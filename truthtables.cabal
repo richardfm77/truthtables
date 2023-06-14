@@ -23,7 +23,9 @@ source-repository head
 
 library
   exposed-modules:
-      Lib
+      Inout
+      LogicProp
+      StackStrings
   other-modules:
       Paths_truthtables
   hs-source-dirs:

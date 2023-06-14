@@ -1,6 +1,6 @@
 module Main (main) where
 
-import Lib
+import Inout
 
 main :: IO ()
-main = someFunc
+main = inputOutput

@@ -1,2 +1,6 @@
+import LogicProp
+
 main :: IO ()
-main = putStrLn "Test no implementado"
+main = do 
+    putStrLn ""
+    print (getExpBool "Implies (Not q) (Not p)")
