@@ -1,2 +1,7 @@
+import LogicProp
+
 main :: IO ()
-main = putStrLn "Test no implementado"
+main = do 
+    
+    putStrLn ""
+    putStr (getTable "Implies (And p q) (And (And s (Not r)) t)")
