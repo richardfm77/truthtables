@@ -2,5 +2,6 @@ import LogicProp
 
 main :: IO ()
 main = do 
+    
     putStrLn ""
-    print (getExpBool "Implies (Not q) (Not p)")
+    putStr (getTable "Implies (And p q) (And (And s (Not r)) t)")

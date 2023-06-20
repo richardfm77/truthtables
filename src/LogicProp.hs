@@ -1,12 +1,21 @@
 module LogicProp (getTable) where
 
 import StackStrings
+import DrawTable
 
 -- Data structure Boolean expression.
 data ExpBool = 
     Var Char | Not ExpBool | Or ExpBool ExpBool |
     And ExpBool ExpBool | Implies ExpBool ExpBool |
-    Equal ExpBool ExpBool deriving Show   
+    Equal ExpBool ExpBool  
+
+instance Show ExpBool where
+    show (Var p) = show p
+    show (Not exp) = "¬(" ++ (show exp) ++ ")"
+    show (Or exp1 exp2) = "(" ++ (show exp1) ++ "v" ++ (show exp2) ++ ")"
+    show (And exp1 exp2) = "(" ++ (show exp1) ++ "^" ++ (show exp2) ++ ")"
+    show (Implies exp1 exp2) = "(" ++ (show exp1) ++ "=>" ++ (show exp2) ++ ")"
+    show (Equal exp1 exp2) = "(" ++ (show exp1) ++ "<=>" ++ (show exp2) ++ ")" 
 
 -- Analyse syntactically a propositional logic formula.
 getExpBool :: String -> ExpBool
@@ -52,18 +61,16 @@ split (x:xs) exp1 stack
 
 --
 getAtomicsVar :: ExpBool -> [Char]
-getAtomicsVar exp = noRepeat (vars exp)
+getAtomicsVar exp = noRepeat (getVars exp)
 
 --
-vars :: ExpBool -> [Char]
-vars Var p vars = 
-    if (elem p vars) 
-        then []
-        else [p]
-vars Or exp1 exp2 = (vars exp1) ++ (vars exp1)
-vars And exp1 exp2 = (vars exp1) ++ (vars exp1)
-vars Implies exp1 exp2 = (vars exp1) ++ (vars exp1)
-vars Equal exp1 exp2 = (vars exp1) ++ (vars exp1)
+getVars :: ExpBool -> [Char]
+getVars (Var p) = [p]
+getVars (Not exp) = getVars exp 
+getVars (Or exp1 exp2) = (getVars exp1) ++ (getVars exp2)
+getVars (And exp1 exp2)= (getVars exp1) ++ (getVars exp2)
+getVars (Implies exp1 exp2) = (getVars exp1) ++ (getVars exp2)
+getVars (Equal exp1 exp2) = (getVars exp1) ++ (getVars exp2)
 
 --
 noRepeat :: [Char] -> [Char]
@@ -73,14 +80,39 @@ noRepeat (x : xs) =
     then noRepeat xs
     else x : noRepeat xs
 
--- evaluate :: ExpBool -> Bool
--- evaluate (Var p b) = b
--- evaluate (Not exp) = not (evaluate exp)
--- evaluate (Or exp1 exp2) = (evaluate exp1) || (evaluate exp2)
--- evaluate (And exp1 exp2) = (evaluate exp1) && (evaluate exp2)
--- evaluate (Implies exp1 exp2) = (not (evaluate exp1)) || (evaluate exp2)
--- evaluate (Equal exp1 exp2) = (evaluate exp1) == (evaluate exp2)
+subsuc :: [a] -> [[a]]
+subsuc [] = [[]]
+subsuc (c : xs) = subsuc xs ++ [c : ys | ys <- subsuc xs]
+
+evaluate :: ExpBool -> [Char] -> Bool
+evaluate (Var p) vars = elem p vars
+evaluate (Not exp) vars = not (evaluate exp vars)
+evaluate (Or exp1 exp2) vars = (evaluate exp1 vars) || (evaluate exp2 vars)
+evaluate (And exp1 exp2) vars = (evaluate exp1 vars) && (evaluate exp2 vars)
+evaluate (Implies exp1 exp2) vars = (not (evaluate exp1 vars)) || (evaluate exp2 vars)
+evaluate (Equal exp1 exp2) vars = (evaluate exp1 vars) == (evaluate exp2 vars)
 
 getTable :: String -> String
-getTable exp = let expB = getExpBool exp in
-    getAtomicsVar expB 
+getTable str = let exp = (getExpBool str) in
+    auxTable exp (getAtomicsVar exp)
+
+auxTable :: ExpBool -> [Char] -> String
+auxTable exp vars = let str = show exp in
+    drawLines (vars ++ str) ++ drawCells (vars) ++ " " ++ str ++ " |\n"   
+    ++ (aux2Table exp vars (subsuc vars))
+
+aux2Table :: ExpBool -> [Char] -> [[Char]] -> String
+aux2Table _ _ [] = "" 
+aux2Table exp vars (x:xs) = let values = aux3Table vars x in
+    if (evaluate exp x)
+        then drawLines2 (values ++ "T") ++ drawCells (values ++ "T") ++ "\n"
+            ++ (aux2Table exp vars xs) 
+        else drawLines2 (values ++ "F") ++ drawCells (values ++ "F") ++ "\n"
+            ++ (aux2Table exp vars xs)
+
+aux3Table :: [Char] -> [Char] -> [Char]
+aux3Table [] _ = []
+aux3Table (x:xs) inter = 
+    if (elem x inter)
+        then ['T'] ++ (aux3Table xs inter)
+        else ['F'] ++ (aux3Table xs inter)
