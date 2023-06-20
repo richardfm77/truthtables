@@ -2,7 +2,7 @@ module Inout (inputOutput) where
 
 import LogicProp
 
--- Manage input and output.
+-- Manages input and output of program.
 inputOutput :: IO ()
 inputOutput = do 
     putStrLn "Enter a propositional logic formula:"

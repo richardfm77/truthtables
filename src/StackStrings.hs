@@ -1,3 +1,4 @@
+-- Implementation of Stack data estructure.
 module StackStrings
     (
         StackString,
