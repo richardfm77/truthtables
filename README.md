@@ -61,3 +61,76 @@ Made exclusively for Unix systems.
   * Implies -->  Implies (exp1) (exp2) **where *exp1* and *exp2* are formulas of propositional logic.**
 
   * Equal -->  Equal (exp1) (exp2) **where *exp1* and *exp2* are formulas of propositional logic.**
+
+## Examples of inputs and outputs.
+
+* Example 1.
+  
+  *Input:* The input is in standard unix input.
+  ```sh
+   Or p q
+  ```
+  *Output:*
+  The output is in standard unix output
+  ```sh
+   ----------------------
+   | p | q | ('p'v'q') |
+   ------------
+   | F | F | F |
+   ------------
+   | F | T | T |
+   ------------
+   | T | F | T |
+   ------------
+   | T | T | T | 
+  ```
+
+* Example 2.
+  
+  *Input:* The input is in standard unix input.
+  ```sh
+   Equal (Implies p q) (Or (Not p) q)
+  ```
+  *Output:*
+  The output is in standard unix output
+  ```sh
+   ----------------------------------------------------------
+   | p | q | (('p'=>'q')<=>(¬('p')v'q')) |
+   ------------
+   | F | F | T |
+   ------------
+   | F | T | T |
+   ------------
+   | T | F | T |
+   ------------
+   | T | T | T |
+  ```
+
+* Example 3.
+  
+  *Input:* The input is in standard unix input.
+  ```sh
+   Implies (And (Implies p q) (Implies q r)) (Implies p r)
+  ```
+  *Output:*
+  The output is in standard unix output
+  ```sh
+   --------------------------------------------------------------------------------
+   | q | p | r | ((('p'=>'q')^('q'=>'r'))=>('p'=>'r')) |
+   ----------------
+   | F | F | F | T |
+   ----------------
+   | F | F | T | T |
+   ----------------
+   | F | T | F | T |
+   ----------------
+   | F | T | T | T |
+   ----------------
+   | T | F | F | T |
+   ----------------
+   | T | F | T | T |
+   ----------------
+   | T | T | F | T |
+   ----------------
+   | T | T | T | T |
+  ```
